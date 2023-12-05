@@ -17,7 +17,7 @@ void readSocket(int socket, void *val, size_t size) {
     }
 }
 
-void sendSocket(int socket, void *data, size_t size) {
+void sendSocket(int socket, const void *data, size_t size) {
     size_t totalSend = 0;
     while (totalSend < size) {
         size_t curSend = send(socket, (char *) data + totalSend, size, totalSend);

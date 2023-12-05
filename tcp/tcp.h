@@ -10,7 +10,7 @@ int setSocketTimeout(int socketFd, struct timeval timeout);
 
 void readSocket(int socket, void *val, size_t size);
 
-void sendSocket(int socket, void *data, size_t size);
+void sendSocket(int socket, const void *data, size_t size);
 
 class ConnectionException : public std::exception {
 private:
@@ -48,8 +48,8 @@ std::string toString(address_t address);
 
 class TCPHolder {
 private:
-    int initAddrIPV4(char* ip, int port);
-    int initAddrIPV6(char* ip, int port);
+    int initAddrIPV4(const char* ip, int port);
+    int initAddrIPV6(const char* ip, int port);
 protected:
     std::string addressString;
     address_t address{};
@@ -72,7 +72,7 @@ public:
 
 class TCPClient: public TCPHolder {
 public:
-    TCPClient(char *ip, int port) : TCPHolder(ip, port) {}
+    TCPClient(const char *ip, int port) : TCPHolder(ip, port) {}
     int openConnection();
 };
 

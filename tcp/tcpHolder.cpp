@@ -26,7 +26,7 @@ std::string TCPHolder::getAddressString() {
 }
 
 
-TCPHolder::TCPHolder(char *ip, int port) {
+TCPHolder::TCPHolder(const char *ip, int port) {
     if (port <= 0 || port > 65535) {
         throw TCPError("Wrong port number");
     }
@@ -35,13 +35,8 @@ TCPHolder::TCPHolder(char *ip, int port) {
     }
     addressString = toString(address);
 }
-TCPHolder::TCPHolder(int port) {
-    if (port <= 0 || port > 65535) {
-        throw TCPError("Wrong port number");
-    }
-}
 
-int TCPHolder::initAddrIPV4(char *ip, int port) {
+int TCPHolder::initAddrIPV4(const char *ip, int port) {
     int err;
     err = inet_pton(AF_INET, ip, &(address.ipv4.sin_addr));
     if (err != 1)
@@ -52,7 +47,7 @@ int TCPHolder::initAddrIPV4(char *ip, int port) {
     return 1;
 }
 
-int TCPHolder::initAddrIPV6(char *ip, int port) {
+int TCPHolder::initAddrIPV6(const char *ip, int port) {
     int err;
     err = inet_pton(AF_INET6, ip, &(address.ipv6.sin6_addr));
     if (err != 1)
