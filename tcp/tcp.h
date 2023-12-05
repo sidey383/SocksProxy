@@ -54,7 +54,7 @@ protected:
     std::string addressString;
     address_t address{};
 public:
-    TCPHolder(const char *ip, int port);
+    TCPHolder(char *ip, int port);
     std::string getAddressString();
 };
 
@@ -63,7 +63,7 @@ class TCPServer: public TCPHolder {
     int fdS = -1;
 
 public:
-    TCPServer(const char *ip, int port) : TCPHolder(ip, port) {}
+    TCPServer(char *ip, int port) : TCPHolder(ip, port) {}
     void bindAddress();
     void startLister();
     ~TCPServer();
