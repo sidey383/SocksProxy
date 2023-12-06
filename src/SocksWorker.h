@@ -1,12 +1,12 @@
 #pragma one
 #include "../tcp/Socket.h"
 
-#define SOCKS_BUFFER_SIZE 8192
+#define SOCKS_BUFFER_SIZE 40000
 class SocksWorker {
 private:
     TCP::Socket _client;
     TCP::Socket _server;
-    char _buffer[SOCKS_BUFFER_SIZE];
+    char _buffer[SOCKS_BUFFER_SIZE]{};
 protected:
     // POLLIN | POLLPRI
     bool proxyInPacket(int in, int out);

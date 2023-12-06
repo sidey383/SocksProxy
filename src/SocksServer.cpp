@@ -165,14 +165,6 @@ void SocksServer::accept(TCP::Socket socket , struct sockaddr addr) {
         return;
     }
     TCP::Socket server = TCP::connectSocket(ipaddr);
-    err = server.removeTimeOut();
-    if (err != 0) {
-        std::cerr << "Can't remove socket timeout " << TCP::toString(addr) << strerror(err) << "\n";
-    }
-    err = socket.removeTimeOut();
-    if (err != 0) {
-        std::cerr << "Can't remove socket timeout " << TCP::toString(addr) << strerror(err) << "\n";
-    }
     SocksWorker worker(socket, server);
     worker.work();
 }

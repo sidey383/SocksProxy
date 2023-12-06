@@ -59,7 +59,7 @@ void SocksWorker::work() {
                     POLLPRI | POLLIN
             },{
                     [this](int in, int out) { return SocksWorker::proxyClose(in, out); },
-                    POLLHUP
+                    POLLHUP | POLLRDHUP
             },{
                     [this](int in, int out) { return SocksWorker::proxyWrongWal(in, out); },
                     POLLNVAL
@@ -75,16 +75,18 @@ void SocksWorker::work() {
     };
     bool isWork = true;
     while (isWork) {
-        int status = ::poll(polls, 2, -1);
+        int status = ::poll(polls, 2, 10000);
         if (status == -1) {
             std::cerr << "Poll error\n";
             break;
         }
-        for (int i = 0, j = 1; i < 2; i++, j--) {
+        std::cout << "Poll " << status << " " << polls[0].revents << " " << polls[1].revents << "\n";
+        for (int i = 0; i < 2; i++) {
             pollfd in = polls[i];
-            pollfd out = polls[j];
+            pollfd out = polls[ (i + 1)%2];
             for (auto & action : actions) {
                 if ((action.flag & in.revents) != 0) {
+                    in.revents = (short) (in.revents & (~action.flag));
                     isWork = action.func(in.fd, out.fd);
                     if (!isWork)
                         break;
@@ -92,8 +94,24 @@ void SocksWorker::work() {
             }
             if (!isWork)
                 break;
+            if (in.revents != 0) {
+                std::cerr << "Not catched events " << in.revents << "\n";
+                in.revents = 0;
+            }
+            int err;
+            socklen_t len = sizeof(err);
+            int getError = getsockopt(in.fd, SOL_SOCKET, SO_ERROR, &err, &len);
+            if (getError != 0) {
+                std::cout << "Connection error, can't get error " << strerror(errno) << "\n";
+                isWork = false;
+                break;
+            }
+            if (err != 0) {
+                std::cout << "Connection error " << strerror(err) << "\n";
+                isWork = false;
+                break;
+            }
         }
-        polls[0].revents = 0;
-        polls[1].revents = 0;
     }
+    std::cout << "Close connection"<< "\n";
 }
