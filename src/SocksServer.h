@@ -1,18 +1,16 @@
 #pragma once
-#include "../tcp/tcp.h"
+#include "../tcp/Server.h"
+#include "SocksWorker.h"
 
-class SocksServer : public TCPServer {
+class SocksServer : public TCP::Server {
 private:
     struct timeval timeout;
-    address_t targetAddress{};
-
-    void acceptor(int fd, address_t address) override;
-    bool authorize(int fd);
-    bool acceptCommand(int fd);
-    bool readIpV4(int fd);
-    bool readIpV6(int fd);
-    bool readDomain(int fd);
+protected:
+    void accept(TCP::Socket, struct sockaddr) override;
+    static bool authorize(TCP::Socket&);
+    static TCP::ipaddres acceptCommand(TCP::Socket&);
+    static void sendAnswer(const TCP::Socket& socket, TCP::ipaddres);
 public:
-    SocksServer(int port, struct timeval timeout);
+    SocksServer(uint16_t port, struct timeval timeout);
 
 };

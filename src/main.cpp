@@ -1,10 +1,18 @@
+#include "SocksServer.h"
 #include <iostream>
-#include "../tcp/TcpSocket.h"
+
 
 
 int main(int argc, char **argv) {
-    if (argc < 1)
+    if (argc < 2)
         return 0;
-    char* address = argc < 2 ? nullptr : argv[1];
-    TCP::Socket(address, (uint16_t) 8080);
+    char val[0];
+    auto port = (uint16_t) strtol(argv[1], nullptr, 10);
+    try {
+        SocksServer server(port, {1, 0});
+        server.listen();
+    } catch (std::exception& e) {
+        std::cerr << e.what();
+    }
+
 }
